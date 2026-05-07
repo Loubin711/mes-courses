@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Mes Courses">
+<meta name="theme-color" content="#1d9e75">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%231d9e75'/%3E%3Ctext x='50%25' y='50%25' font-size='110' text-anchor='middle' dy='.35em'%3E🏃%3C/text%3E%3C/svg%3E">
+<title>Mes Courses</title>
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body {
+    margin: 0; padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: #f5f5f7;
+    color: #1d1d1f;
+    min-height: 100vh;
+    padding-top: env(safe-area-inset-top);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .app {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .header h1 {
+    font-size: 28px;
+    margin: 0;
+    font-weight: 700;
+  }
+  .header-icon {
+    font-size: 32px;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .stat-card {
+    background: white;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .stat-label {
+    font-size: 12px;
+    color: #86868b;
+    margin-bottom: 4px;
+  }
+  .stat-value {
+    font-size: 22px;
+    font-weight: 600;
+    color: #1d1d1f;
+  }
+  .stat-value.small {
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  .card {
+    background: white;
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .card-title {
+    font-size: 17px;
+    font-weight: 600;
+    margin: 0 0 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  label {
+    display: block;
+    font-size: 13px;
+    color: #86868b;
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+
+  input, select, button {
+    font-family: inherit;
+    font-size: 16px;
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d2d2d7;
+    border-radius: 10px;
+    background: white;
+    color: #1d1d1f;
+    margin-bottom: 10px;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23999' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    padding-right: 32px;
+  }
+  input:focus, select:focus {
+    outline: none;
+    border-color: #1d9e75;
+    box-shadow: 0 0 0 3px rgba(29,158,117,0.15);
+  }
+
+  .time-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .time-grid input { margin-bottom: 0; }
+
+  button.primary {
+    background: #1d9e75;
+    color: white;
+    border: none;
+    font-weight: 600;
+    padding: 14px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  button.primary:active { background: #167a5b; }
+
+  button.secondary {
+    background: white;
+    color: #1d9e75;
+    border: 1px solid #1d9e75;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  button.danger {
+    background: transparent;
+    color: #d70015;
+    border: none;
+    width: auto;
+    padding: 4px 8px;
+    margin: 0;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .filters {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .filters select { margin-bottom: 0; flex: 1; }
+
+  .run-card {
+    background: white;
+    border-radius: 14px;
+    padding: 14px;
+    margin-bottom: 10px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+  .run-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .run-name {
+    font-weight: 600;
+    font-size: 15px;
+  }
+  .run-meta {
+    font-size: 13px;
+    color: #86868b;
+    margin-top: 2px;
+  }
+  .run-stats {
+    display: flex;
+    gap: 16px;
+    padding-top: 10px;
+    margin-top: 10px;
+    border-top: 1px solid #f0f0f2;
+  }
+  .run-stat {
+    flex: 1;
+  }
+  .run-stat-label {
+    font-size: 11px;
+    color: #86868b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .run-stat-value {
+    font-size: 15px;
+    font-weight: 600;
+    margin-top: 2px;
+  }
+
+  .empty {
+    text-align: center;
+    color: #86868b;
+    padding: 40px 20px;
+    background: white;
+    border-radius: 14px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+
+  .msg {
+    font-size: 13px;
+    min-height: 18px;
+    margin-top: 4px;
+  }
+  .msg.error { color: #d70015; }
+  .msg.success { color: #1d9e75; }
+
+  .actions-row {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .actions-row button { margin-bottom: 0; }
+
+  /* Dark mode */
+  @media (prefers-color-scheme: dark) {
+    body { background: #000; color: #f5f5f7; }
+    .card, .stat-card, .run-card, .empty { background: #1c1c1e; box-shadow: none; }
+    .stat-value, .run-name, .run-stat-value { color: #f5f5f7; }
+    input, select { background: #2c2c2e; border-color: #38383a; color: #f5f5f7; }
+    button.secondary { background: #1c1c1e; }
+    .run-stats { border-top-color: #38383a; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <div class="header">
+    <span class="header-icon">🏃</span>
+    <h1>Mes Courses</h1>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-label">Total courses</div>
+      <div class="stat-value" id="stat-count">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total km</div>
+      <div class="stat-value" id="stat-km">0</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Meilleure allure</div>
+      <div class="stat-value small" id="stat-pace">—</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Course la + rapide</div>
+      <div class="stat-value small" id="stat-fastest">—</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2 class="card-title">➕ Nouvelle course</h2>
+
+    <label>Date</label>
+    <input type="date" id="f-date">
+
+    <label>Distance</label>
+    <select id="f-distance">
+      <option value="5">5 km</option>
+      <option value="10">10 km</option>
+      <option value="15">15 km</option>
+      <option value="20">20 km</option>
+      <option value="21.0975">Semi-marathon (21,0975 km)</option>
+      <option value="42.195">Marathon (42,195 km)</option>
+      <option value="custom">Autre…</option>
+    </select>
+    <input type="number" id="f-distance-custom" step="0.01" placeholder="Distance en km" style="display:none;">
+
+    <label>Nom de l'épreuve</label>
+    <input type="text" id="f-name" placeholder="Ex : 10 km de Paris">
+
+    <label>Lieu</label>
+    <input type="text" id="f-place" placeholder="Ex : Paris">
+
+    <label>Temps (h / min / s)</label>
+    <div class="time-grid">
+      <input type="number" id="f-h" min="0" placeholder="h" inputmode="numeric">
+      <input type="number" id="f-m" min="0" max="59" placeholder="min" inputmode="numeric">
+      <input type="number" id="f-s" min="0" max="59" placeholder="s" inputmode="numeric">
+    </div>
+
+    <button class="primary" id="btn-add">✓ Enregistrer</button>
+    <div class="msg error" id="form-msg"></div>
+  </div>
+
+  <div class="actions-row">
+    <button class="secondary" id="btn-export">📤 Exporter CSV</button>
+    <button class="secondary" id="btn-import" style="position:relative;">
+      📥 Importer
+      <input type="file" id="file-import" accept=".csv,.json" style="position:absolute;inset:0;opacity:0;cursor:pointer;">
+    </button>
+  </div>
+
+  <div class="filters">
+    <select id="filter-distance">
+      <option value="all">Toutes distances</option>
+      <option value="5">5 km</option>
+      <option value="10">10 km</option>
+      <option value="15">15 km</option>
+      <option value="20">20 km</option>
+      <option value="21.0975">Semi</option>
+      <option value="42.195">Marathon</option>
+    </select>
+    <select id="sort-by">
+      <option value="date-desc">Date (récent)</option>
+      <option value="date-asc">Date (ancien)</option>
+      <option value="distance-desc">Distance (+)</option>
+      <option value="distance-asc">Distance (−)</option>
+      <option value="pace-asc">Allure (rapide)</option>
+    </select>
+  </div>
+
+  <div id="list"></div>
+
+</div>
+
+<script>
+(function(){
+  const KEY = 'mesCourses_v1';
+  let runs = [];
+
+  document.getElementById('f-date').valueAsDate = new Date();
+
+  const distSelect = document.getElementById('f-distance');
+  const distCustom = document.getElementById('f-distance-custom');
+  distSelect.addEventListener('change', () => {
+    distCustom.style.display = distSelect.value === 'custom' ? 'block' : 'none';
+  });
+
+  function load() {
+    try {
+      const raw = localStorage.getItem(KEY);
+      runs = raw ? JSON.parse(raw) : [];
+    } catch(e) { runs = []; }
+  }
+
+  function save() {
+    try { localStorage.setItem(KEY, JSON.stringify(runs)); }
+    catch(e) { alert('Erreur de sauvegarde'); }
+  }
+
+  function fmtTime(sec) {
+    const h = Math.floor(sec/3600);
+    const m = Math.floor((sec%3600)/60);
+    const s = sec%60;
+    if (h > 0) return `${h}h${String(m).padStart(2,'0')}'${String(s).padStart(2,'0')}"`;
+    return `${m}'${String(s).padStart(2,'0')}"`;
+  }
+
+  function fmtPace(sec, km) {
+    if (!km || !sec) return '—';
+    const paceSec = Math.round(sec / km);
+    const m = Math.floor(paceSec/60);
+    const s = paceSec%60;
+    return `${m}'${String(s).padStart(2,'0')}"/km`;
+  }
+
+  function fmtDate(iso) {
+    const d = new Date(iso);
+    return d.toLocaleDateString('fr-FR', {day:'2-digit', month:'short', year:'numeric'});
+  }
+
+  function fmtDist(km) {
+    if (km === 21.0975) return 'Semi';
+    if (km === 42.195) return 'Marathon';
+    return km % 1 === 0 ? `${km} km` : `${km.toFixed(2)} km`;
+  }
+
+  document.getElementById('btn-add').addEventListener('click', () => {
+    const msg = document.getElementById('form-msg');
+    msg.className = 'msg error';
+    msg.textContent = '';
+
+    const date = document.getElementById('f-date').value;
+    let distance = distSelect.value === 'custom'
+      ? parseFloat(distCustom.value)
+      : parseFloat(distSelect.value);
+    const name = document.getElementById('f-name').value.trim();
+    const place = document.getElementById('f-place').value.trim();
+    const h = parseInt(document.getElementById('f-h').value) || 0;
+    const m = parseInt(document.getElementById('f-m').value) || 0;
+    const s = parseInt(document.getElementById('f-s').value) || 0;
+    const totalSec = h*3600 + m*60 + s;
+
+    if (!date) { msg.textContent = 'Date requise'; return; }
+    if (!distance || distance <= 0) { msg.textContent = 'Distance requise'; return; }
+    if (totalSec <= 0) { msg.textContent = 'Temps requis'; return; }
+
+    runs.push({
+      id: Date.now(),
+      date, distance, name, place, time: totalSec
+    });
+    save();
+    document.getElementById('f-name').value = '';
+    document.getElementById('f-place').value = '';
+    document.getElementById('f-h').value = '';
+    document.getElementById('f-m').value = '';
+    document.getElementById('f-s').value = '';
+    msg.className = 'msg success';
+    msg.textContent = '✓ Course enregistrée';
+    setTimeout(() => { msg.textContent = ''; }, 2000);
+    render();
+  });
+
+  document.getElementById('filter-distance').addEventListener('change', render);
+  document.getElementById('sort-by').addEventListener('change', render);
+
+  // Export CSV
+  document.getElementById('btn-export').addEventListener('click', () => {
+    if (runs.length === 0) { alert('Aucune course à exporter'); return; }
+    const header = 'Date,Distance (km),Nom,Lieu,Temps (s),Temps,Allure';
+    const rows = runs.map(r => [
+      r.date,
+      r.distance,
+      `"${(r.name||'').replace(/"/g,'""')}"`,
+      `"${(r.place||'').replace(/"/g,'""')}"`,
+      r.time,
+      fmtTime(r.time),
+      fmtPace(r.time, r.distance)
+    ].join(','));
+    const csv = [header, ...rows].join('\n');
+    const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `mes-courses-${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+  });
+
+  // Import (CSV ou JSON de sauvegarde)
+  document.getElementById('file-import').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const txt = ev.target.result;
+        let imported = [];
+        if (file.name.endsWith('.json')) {
+          imported = JSON.parse(txt);
+        } else {
+          // CSV simple
+          const lines = txt.split(/\r?\n/).filter(l => l.trim());
+          lines.shift(); // header
+          imported = lines.map(l => {
+            const m = l.match(/^([^,]*),([^,]*),"([^"]*)","([^"]*)",([^,]*)/);
+            if (!m) return null;
+            return {
+              id: Date.now() + Math.random(),
+              date: m[1],
+              distance: parseFloat(m[2]),
+              name: m[3],
+              place: m[4],
+              time: parseInt(m[5])
+            };
+          }).filter(Boolean);
+        }
+        if (confirm(`Importer ${imported.length} course(s) ? Elles s'ajouteront aux courses existantes.`)) {
+          runs = runs.concat(imported);
+          save();
+          render();
+        }
+      } catch(err) { alert('Erreur lors de l\'import : ' + err.message); }
+      e.target.value = '';
+    };
+    reader.readAsText(file);
+  });
+
+  window.deleteRun = function(id) {
+    if (!confirm('Supprimer cette course ?')) return;
+    runs = runs.filter(r => r.id !== id);
+    save();
+    render();
+  };
+
+  function render() {
+    document.getElementById('stat-count').textContent = runs.length;
+    const totalKm = runs.reduce((a,r) => a + r.distance, 0);
+    document.getElementById('stat-km').textContent = totalKm.toFixed(1);
+
+    if (runs.length > 0) {
+      const withPace = runs.map(r => ({...r, pace: r.time / r.distance}));
+      const fastest = withPace.reduce((a,b) => a.pace < b.pace ? a : b);
+      document.getElementById('stat-pace').textContent = fmtPace(fastest.time, fastest.distance);
+      document.getElementById('stat-fastest').textContent =
+        `${fmtDist(fastest.distance)} · ${fmtTime(fastest.time)}`;
+    } else {
+      document.getElementById('stat-pace').textContent = '—';
+      document.getElementById('stat-fastest').textContent = '—';
+    }
+
+    const filterDist = document.getElementById('filter-distance').value;
+    const sortBy = document.getElementById('sort-by').value;
+    let list = [...runs];
+    if (filterDist !== 'all') {
+      list = list.filter(r => r.distance === parseFloat(filterDist));
+    }
+    list.sort((a,b) => {
+      switch(sortBy) {
+        case 'date-asc': return a.date.localeCompare(b.date);
+        case 'date-desc': return b.date.localeCompare(a.date);
+        case 'distance-asc': return a.distance - b.distance;
+        case 'distance-desc': return b.distance - a.distance;
+        case 'pace-asc': return (a.time/a.distance) - (b.time/b.distance);
+      }
+    });
+
+    const container = document.getElementById('list');
+    if (list.length === 0) {
+      container.innerHTML = `<div class="empty">${runs.length > 0 ? 'Aucune course ne correspond au filtre.' : 'Aucune course enregistrée.<br>Ajoutez votre première course ci-dessus !'}</div>`;
+      return;
+    }
+    container.innerHTML = list.map(r => `
+      <div class="run-card">
+        <div class="run-header">
+          <div style="flex:1; min-width:0;">
+            <div class="run-name">${escapeHtml(r.name) || 'Course sans nom'}</div>
+            <div class="run-meta">
+              📅 ${fmtDate(r.date)}${r.place ? ` · 📍 ${escapeHtml(r.place)}` : ''}
+            </div>
+          </div>
+          <button class="danger" onclick="deleteRun(${r.id})" aria-label="Supprimer">🗑️</button>
+        </div>
+        <div class="run-stats">
+          <div class="run-stat">
+            <div class="run-stat-label">Distance</div>
+            <div class="run-stat-value">${fmtDist(r.distance)}</div>
+          </div>
+          <div class="run-stat">
+            <div class="run-stat-label">Temps</div>
+            <div class="run-stat-value">${fmtTime(r.time)}</div>
+          </div>
+          <div class="run-stat">
+            <div class="run-stat-label">Allure</div>
+            <div class="run-stat-value">${fmtPace(r.time, r.distance)}</div>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  function escapeHtml(s) {
+    if (!s) return '';
+    return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  load();
+  render();
+})();
+</script>
+</body>
+</html>
